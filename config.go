@@ -2,30 +2,24 @@
 package userConfig
 
 import (
-	"bufio"
 	"errors"
-	"fmt"
 	"os"
 	"strings"
 
-	"launchpad.net/go-xdg"
+	"gogs.bullercodeworks.com/brian/user-config/ext/go-xdg"
 )
 
 // Config is a stuct for managing the config
 type Config struct {
 	name          string
-	generalConfig *ConfigFile
-	// ConfigFiles are files that have key/value pairs
-	ConfigFiles []ConfigFile
-	// RawFiles are other files (dbs, etc.)
-	RawFiles map[string]string
+	generalConfig *GeneralConfig
 }
 
 // NewConfig generates a Config struct
 func NewConfig(name string) (*Config, error) {
 	c := &Config{name: name}
 	if err := c.Load(); err != nil {
-		return nil, err
+		return c, err
 	}
 	return c, nil
 }
@@ -40,15 +34,14 @@ func (c *Config) Get(k string) string {
 	return c.generalConfig.Get(k)
 }
 
+// GetConfigPath just returns the config path
+func (c *Config) GetConfigPath() string {
+	return c.generalConfig.Path
+}
+
 // Load loads config files into the config
 func (c *Config) Load() error {
 	var err error
-	// Clear the data, we're reloading
-	c.ConfigFiles = c.ConfigFiles[:0]
-	c.RawFiles = make(map[string]string)
-	var conf generalConfig
-	c.data = conf
-
 	if strings.TrimSpace(c.name) == "" {
 		return errors.New("Invalid Config Name: " + c.name)
 	}
@@ -61,10 +54,10 @@ func (c *Config) Load() error {
 			return err
 		}
 		// We always have a <name>.conf file
-		cfgPath = cfgPath + "/" + c.name + ".conf"
+		//cfgPath = cfgPath + "/" + c.name + ".conf"
 	}
 	// Load general config
-	if c.generalConfig, err = NewConfigFile(c.name, cfgPath, c.data); err != nil {
+	if c.generalConfig, err = NewGeneralConfig(c.name, cfgPath); err != nil {
 		return err
 	}
 
@@ -73,38 +66,41 @@ func (c *Config) Load() error {
 
 // Save writes the config to file(s)
 func (c *Config) Save() error {
-	var err error
-	c.generalConfig.Save()
-
-	var cfgPath string
-	var configLines []string
-	//configLines = append(configLines, "server="+client.ServerAddr)
-	//configLines = append(configLines, "key="+client.ServerKey)
-	cfgPath = os.Getenv("HOME")
-	if cfgPath != "" {
-		cfgPath = cfgPath + "/.config"
-		if err := c.verifyOrCreateDirectory(cfgPath); err != nil {
-			return err
-		}
-		cfgPath = cfgPath + "/" + c.name
+	if c.generalConfig == nil {
+		return errors.New("Bad setup.")
 	}
-	if cfgPath != "" {
-		file, err := os.Create(cfgPath)
-		if err != nil {
-			// Couldn't load config even though one was specified
-			return err
+	return c.generalConfig.Save()
+	/*
+		var cfgPath string
+		var configLines []string
+		//configLines = append(configLines, "server="+client.ServerAddr)
+		//configLines = append(configLines, "key="+client.ServerKey)
+		cfgPath = os.Getenv("HOME")
+		if cfgPath != "" {
+			cfgPath = cfgPath + "/.config"
+			if err := c.verifyOrCreateDirectory(cfgPath); err != nil {
+				return err
+			}
+			cfgPath = cfgPath + "/" + c.name
 		}
-		defer file.Close()
+		if cfgPath != "" {
+			file, err := os.Create(cfgPath)
+			if err != nil {
+				// Couldn't load config even though one was specified
+				return err
+			}
+			defer file.Close()
 
-		w := bufio.NewWriter(file)
-		for _, line := range configLines {
-			fmt.Fprintln(w, line)
+			w := bufio.NewWriter(file)
+			for _, line := range configLines {
+				fmt.Fprintln(w, line)
+			}
+			if err = w.Flush(); err != nil {
+				return err
+			}
 		}
-		if err = w.Flush(); err != nil {
-			return err
-		}
-	}
-	return nil
+		return nil
+	*/
 }
 
 // verifyOrCreateDirectory is a helper function for building an
