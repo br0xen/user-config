@@ -4,7 +4,6 @@ package userConfig
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"strings"
 
@@ -56,11 +55,9 @@ func (gf *GeneralConfig) Load() error {
 func (gf *GeneralConfig) Save() error {
 	buf := new(bytes.Buffer)
 	cfgPath := gf.Path + "/" + gf.Name + ".conf"
-	fmt.Println("Writing Config File: " + cfgPath)
 	if err := toml.NewEncoder(buf).Encode(gf); err != nil {
 		return err
 	}
-	fmt.Println("Writing Config File: " + buf.String())
 	return ioutil.WriteFile(cfgPath, buf.Bytes(), 0644)
 }
 
