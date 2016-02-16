@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"gogs.bullercodeworks.com/brian/user-config/ext/go-xdg"
+	"github.com/br0xen/user-config/ext/go-xdg"
 )
 
 // Config is a stuct for managing the config
