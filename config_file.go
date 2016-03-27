@@ -4,7 +4,9 @@ package userConfig
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -27,6 +29,19 @@ func NewGeneralConfig(name, path string) (*GeneralConfig, error) {
 	gf.RawFiles = []string{}
 	gf.Values = make(map[string]string)
 
+	// Check if file exists
+	fmt.Println("Checking if config file exists...")
+	var f os.FileInfo
+	var err error
+	if f, err = os.Stat(gf.GetFullPath()); os.IsNotExist(err) {
+		fmt.Println("Nope, saving default config...")
+		if err = gf.Save(); err != nil {
+			fmt.Println("Error saving default config...")
+			return gf, err
+		}
+	}
+	fmt.Println(f)
+
 	if err := gf.Load(); err != nil {
 		return gf, err
 	}
@@ -36,12 +51,11 @@ func NewGeneralConfig(name, path string) (*GeneralConfig, error) {
 // Load loads config files into the config
 func (gf *GeneralConfig) Load() error {
 	if strings.TrimSpace(gf.Name) == "" || strings.TrimSpace(gf.Path) == "" {
-		return errors.New("Invalid ConfigFile Name: " + gf.Path + "/" + gf.Name)
+		return errors.New("Invalid ConfigFile Name: " + gf.GetFullPath())
 	}
 
 	// Config files end with .conf
-	cfgPath := gf.Path + "/" + gf.Name + ".conf"
-	tomlData, err := ioutil.ReadFile(cfgPath)
+	tomlData, err := ioutil.ReadFile(gf.GetFullPath())
 	if err != nil {
 		return err
 	}
@@ -54,11 +68,11 @@ func (gf *GeneralConfig) Load() error {
 // Save writes the config to file(s)
 func (gf *GeneralConfig) Save() error {
 	buf := new(bytes.Buffer)
-	cfgPath := gf.Path + "/" + gf.Name + ".conf"
+	fmt.Println("Save Config: " + gf.GetFullPath())
 	if err := toml.NewEncoder(buf).Encode(gf); err != nil {
 		return err
 	}
-	return ioutil.WriteFile(cfgPath, buf.Bytes(), 0644)
+	return ioutil.WriteFile(gf.GetFullPath(), buf.Bytes(), 0644)
 }
 
 // Set sets a key/value pair in gf, if unable to save, revert to old value
@@ -76,4 +90,9 @@ func (gf *GeneralConfig) Set(k, v string) error {
 // Get gets a key/value pair from gf
 func (gf *GeneralConfig) Get(k string) string {
 	return gf.Values[k]
+}
+
+// GetFullPath returns the full path & filename to the config file
+func (gf *GeneralConfig) GetFullPath() string {
+	return gf.Path + "/" + gf.Name + ".conf"
 }

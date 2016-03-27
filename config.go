@@ -70,37 +70,6 @@ func (c *Config) Save() error {
 		return errors.New("Bad setup.")
 	}
 	return c.generalConfig.Save()
-	/*
-		var cfgPath string
-		var configLines []string
-		//configLines = append(configLines, "server="+client.ServerAddr)
-		//configLines = append(configLines, "key="+client.ServerKey)
-		cfgPath = os.Getenv("HOME")
-		if cfgPath != "" {
-			cfgPath = cfgPath + "/.config"
-			if err := c.verifyOrCreateDirectory(cfgPath); err != nil {
-				return err
-			}
-			cfgPath = cfgPath + "/" + c.name
-		}
-		if cfgPath != "" {
-			file, err := os.Create(cfgPath)
-			if err != nil {
-				// Couldn't load config even though one was specified
-				return err
-			}
-			defer file.Close()
-
-			w := bufio.NewWriter(file)
-			for _, line := range configLines {
-				fmt.Fprintln(w, line)
-			}
-			if err = w.Flush(); err != nil {
-				return err
-			}
-		}
-		return nil
-	*/
 }
 
 // verifyOrCreateDirectory is a helper function for building an
