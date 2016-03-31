@@ -34,6 +34,12 @@ func (c *Config) Get(k string) string {
 	return c.generalConfig.Get(k)
 }
 
+// AddConfig adds a new config file named <name>.conf
+func (c *Config) AddConfig(name string) (*ConfigFile, error) {
+
+	return nil, nil
+}
+
 // GetConfigPath just returns the config path
 func (c *Config) GetConfigPath() string {
 	return c.generalConfig.Path
