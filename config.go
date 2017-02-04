@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/br0xen/user-config/ext/go-xdg"
 )
@@ -24,14 +25,56 @@ func NewConfig(name string) (*Config, error) {
 	return c, nil
 }
 
+// GetKeyList at the config level returns all keys in the <c.name>.conf file
+func (c *Config) GetKeyList() []string {
+	return c.generalConfig.GetKeyList()
+}
+
 // Set at the config level sets a value in the <c.name>.conf file
 func (c *Config) Set(k, v string) error {
 	return c.generalConfig.Set(k, v)
 }
 
+// SetBytes at the config level sets a value in the <c.name>.conf file
+func (c *Config) SetBytes(k string, v []byte) error {
+	return c.generalConfig.SetBytes(k, v)
+}
+
+// SetInt saves an integer (as a string) in the <c.name>.conf file
+func (c *Config) SetInt(k string, v int) error {
+	return c.generalConfig.SetInt(k, v)
+}
+
+// SetDateTime saves a time.Time (as a string) in the <c.name>.conf file
+func (c *Config) SetDateTime(k string, v time.Time) error {
+	return c.generalConfig.SetDateTime(k, v)
+}
+
 // Get at the config level retrieves a value from the <c.name>.conf file
 func (c *Config) Get(k string) string {
 	return c.generalConfig.Get(k)
+}
+
+// GetBytes at the config level retrieves a value from the <c.name>.conf file
+// and returns it as a byte slice
+func (c *Config) GetBytes(k string) []byte {
+	return c.generalConfig.GetBytes(k)
+}
+
+// GetInt at the config level retrieves a value from the <c.name>.conf file
+// and returns it as an integer (or an error if conversion fails)
+func (c *Config) GetInt(k string) (int, error) {
+	return c.generalConfig.GetInt(k)
+}
+
+// GetDateTime at the config level retrieves a value from the <c.name>.conf file
+func (c *Config) GetDateTime(k string) (time.Time, error) {
+	return c.generalConfig.GetDateTime(k)
+}
+
+// DeleteKey at the config level removes a key from the <c.name>.conf file
+func (c *Config) DeleteKey(k string) {
+	c.generalConfig.DeleteKey(k)
 }
 
 // GetConfigPath just returns the config path
@@ -49,7 +92,7 @@ func (c *Config) Load() error {
 	var cfgPath string
 	cfgPath = xdg.Config.Dirs()[0]
 	if cfgPath != "" {
-		cfgPath = cfgPath + "/" + c.name
+		cfgPath = cfgPath + string(os.PathSeparator) + c.name
 		if err = c.verifyOrCreateDirectory(cfgPath); err != nil {
 			return err
 		}
@@ -70,37 +113,6 @@ func (c *Config) Save() error {
 		return errors.New("Bad setup.")
 	}
 	return c.generalConfig.Save()
-	/*
-		var cfgPath string
-		var configLines []string
-		//configLines = append(configLines, "server="+client.ServerAddr)
-		//configLines = append(configLines, "key="+client.ServerKey)
-		cfgPath = os.Getenv("HOME")
-		if cfgPath != "" {
-			cfgPath = cfgPath + "/.config"
-			if err := c.verifyOrCreateDirectory(cfgPath); err != nil {
-				return err
-			}
-			cfgPath = cfgPath + "/" + c.name
-		}
-		if cfgPath != "" {
-			file, err := os.Create(cfgPath)
-			if err != nil {
-				// Couldn't load config even though one was specified
-				return err
-			}
-			defer file.Close()
-
-			w := bufio.NewWriter(file)
-			for _, line := range configLines {
-				fmt.Fprintln(w, line)
-			}
-			if err = w.Flush(); err != nil {
-				return err
-			}
-		}
-		return nil
-	*/
 }
 
 // verifyOrCreateDirectory is a helper function for building an

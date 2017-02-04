@@ -5,7 +5,9 @@ import (
 	"bytes"
 	"errors"
 	"io/ioutil"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/BurntSushi/toml"
 )
@@ -61,6 +63,15 @@ func (gf *GeneralConfig) Save() error {
 	return ioutil.WriteFile(cfgPath, buf.Bytes(), 0644)
 }
 
+// GetKeyList returns a list of all keys in the config file
+func (gf *GeneralConfig) GetKeyList() []string {
+	var ret []string
+	for k, _ := range gf.Values {
+		ret = append(ret, k)
+	}
+	return ret
+}
+
 // Set sets a key/value pair in gf, if unable to save, revert to old value
 // (and return the error)
 func (gf *GeneralConfig) Set(k, v string) error {
@@ -73,7 +84,45 @@ func (gf *GeneralConfig) Set(k, v string) error {
 	return nil
 }
 
+// SetBytes at the config level sets a value in the <c.name>.conf file
+func (gf *GeneralConfig) SetBytes(k string, v []byte) error {
+	return gf.Set(k, string(v))
+}
+
+// SetInt sets an integer value (as a string) in the config file
+func (gf *GeneralConfig) SetInt(k string, v int) error {
+	return gf.Set(k, strconv.Itoa(v))
+}
+
+// SetDateTime sets a DateTime value (as a string) in the config file
+func (gf *GeneralConfig) SetDateTime(k string, v time.Time) error {
+	return gf.Set(k, v.Format(time.RFC3339))
+}
+
 // Get gets a key/value pair from gf
 func (gf *GeneralConfig) Get(k string) string {
 	return gf.Values[k]
+}
+
+// GetInt gets a key/value pair from gf and return it as an integer
+// An error if it can't be converted
+func (gf *GeneralConfig) GetInt(k string) (int, error) {
+	return strconv.Atoi(gf.Get(k))
+}
+
+// GetDateTime gets a key/value pair from gf and returns it as a time.Time
+// An error if it can't be converted
+func (gf *GeneralConfig) GetDateTime(k string) (time.Time, error) {
+	return time.Parse(time.RFC3339, k)
+}
+
+// GetBytes gets a key/value pair from gf and returns it as a byte slice
+// Or an error if it fails for whatever reason
+func (gf *GeneralConfig) GetBytes(k string) []byte {
+	return []byte(gf.Get(k))
+}
+
+// DeleteKey removes a key from the file
+func (gf *GeneralConfig) DeleteKey(k string) {
+	delete(gf.Values, k)
 }
