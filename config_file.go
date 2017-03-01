@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"os"
 
 	"github.com/BurntSushi/toml"
 )
@@ -39,14 +40,17 @@ func NewGeneralConfig(name, path string) (*GeneralConfig, error) {
 // Load loads config files into the config
 func (gf *GeneralConfig) Load() error {
 	if strings.TrimSpace(gf.Name) == "" || strings.TrimSpace(gf.Path) == "" {
-		return errors.New("Invalid ConfigFile Name: " + gf.Path + "/" + gf.Name)
+		return errors.New("Invalid ConfigFile Name: " + gf.Path + string(os.PathSeparator) + gf.Name)
 	}
 
 	// Config files end with .conf
-	cfgPath := gf.Path + "/" + gf.Name + ".conf"
+	cfgPath := gf.Path + string(os.PathSeparator) + gf.Name + ".conf"
 	tomlData, err := ioutil.ReadFile(cfgPath)
 	if err != nil {
-		return err
+		// Couldn't find the file, save a new one
+		if err = gf.Save(); err != nil {
+			return err
+		}
 	}
 	if _, err := toml.Decode(string(tomlData), &gf); err != nil {
 		return err
@@ -57,7 +61,7 @@ func (gf *GeneralConfig) Load() error {
 // Save writes the config to file(s)
 func (gf *GeneralConfig) Save() error {
 	buf := new(bytes.Buffer)
-	cfgPath := gf.Path + "/" + gf.Name + ".conf"
+	cfgPath := gf.Path + string(os.PathSeparator) + gf.Name + ".conf"
 	if err := toml.NewEncoder(buf).Encode(gf); err != nil {
 		return err
 	}
