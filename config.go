@@ -50,6 +50,11 @@ func (c *Config) SetDateTime(k string, v time.Time) error {
 	return c.generalConfig.SetDateTime(k, v)
 }
 
+// SetArray saves a string slice in the <c.name>.conf file
+func (c *Config) SetArray(k string, v []string) error {
+	return c.generalConfig.SetArray(k, v)
+}
+
 // Get at the config level retrieves a value from the <c.name>.conf file
 func (c *Config) Get(k string) string {
 	return c.generalConfig.Get(k)
@@ -72,9 +77,13 @@ func (c *Config) GetDateTime(k string) (time.Time, error) {
 	return c.generalConfig.GetDateTime(k)
 }
 
+func (c *Config) GetArray(k string) ([]string, error) {
+	return c.generalConfig.GetArray(k)
+}
+
 // DeleteKey at the config level removes a key from the <c.name>.conf file
-func (c *Config) DeleteKey(k string) {
-	c.generalConfig.DeleteKey(k)
+func (c *Config) DeleteKey(k string) error {
+	return c.generalConfig.DeleteKey(k)
 }
 
 // GetConfigPath just returns the config path

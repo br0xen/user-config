@@ -3,6 +3,7 @@ package userConfig
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"strconv"
@@ -99,6 +100,15 @@ func (gf *GeneralConfig) SetDateTime(k string, v time.Time) error {
 	return gf.Set(k, v.Format(time.RFC3339))
 }
 
+// SetArray sets a string slice value (as a string) in the config file
+func (gf *GeneralConfig) SetArray(k string, v []string) error {
+	b, e := json.Marshal(v)
+	if e != nil {
+		return e
+	}
+	return gf.SetBytes(k, b)
+}
+
 // Get gets a key/value pair from gf
 func (gf *GeneralConfig) Get(k string) string {
 	return gf.Values[k]
@@ -113,7 +123,7 @@ func (gf *GeneralConfig) GetInt(k string) (int, error) {
 // GetDateTime gets a key/value pair from gf and returns it as a time.Time
 // An error if it can't be converted
 func (gf *GeneralConfig) GetDateTime(k string) (time.Time, error) {
-	return time.Parse(time.RFC3339, k)
+	return time.Parse(time.RFC3339, gf.Get(k))
 }
 
 // GetBytes gets a key/value pair from gf and returns it as a byte slice
@@ -122,7 +132,19 @@ func (gf *GeneralConfig) GetBytes(k string) []byte {
 	return []byte(gf.Get(k))
 }
 
+func (gf *GeneralConfig) GetArray(k string) ([]string, error) {
+	var ret []string
+	err := json.Unmarshal(gf.GetBytes(k), &ret)
+	return ret, err
+}
+
 // DeleteKey removes a key from the file
-func (gf *GeneralConfig) DeleteKey(k string) {
+func (gf *GeneralConfig) DeleteKey(k string) error {
+	oldVal := gf.Get(k)
 	delete(gf.Values, k)
+	if err := gf.Save(); err != nil {
+		gf.Values[k] = oldVal
+		return err
+	}
+	return nil
 }
