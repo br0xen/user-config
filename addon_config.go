@@ -54,7 +54,7 @@ func (af *AddonConfig) Load() error {
 		return errors.New("Invalid ConfigFile Name: " + af.GetFullPath())
 	}
 
-	// Config files end with .conf
+	// Config files end with .toml
 	tomlData, err := ioutil.ReadFile(af.GetFullPath())
 	if err != nil {
 		return err
@@ -102,7 +102,7 @@ func (af *AddonConfig) Get(category, k string) string {
 
 // GetFullPath returns the full path & filename to the config file
 func (af *AddonConfig) GetFullPath() string {
-	return af.Path + "/" + af.Name + ".conf"
+	return af.Path + "/" + af.Name + ".toml"
 }
 
 /** END of ConfigFile Interface Implementation **/

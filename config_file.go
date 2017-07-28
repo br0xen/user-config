@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 	"time"
-	"os"
 
 	"github.com/BurntSushi/toml"
 )
@@ -43,8 +43,8 @@ func (gf *GeneralConfig) Load() error {
 		return errors.New("Invalid ConfigFile Name: " + gf.Path + string(os.PathSeparator) + gf.Name)
 	}
 
-	// Config files end with .conf
-	cfgPath := gf.Path + string(os.PathSeparator) + gf.Name + ".conf"
+	// Config files end with .toml
+	cfgPath := gf.Path + string(os.PathSeparator) + gf.Name + ".toml"
 	tomlData, err := ioutil.ReadFile(cfgPath)
 	if err != nil {
 		// Couldn't find the file, save a new one
@@ -61,7 +61,7 @@ func (gf *GeneralConfig) Load() error {
 // Save writes the config to file(s)
 func (gf *GeneralConfig) Save() error {
 	buf := new(bytes.Buffer)
-	cfgPath := gf.Path + string(os.PathSeparator) + gf.Name + ".conf"
+	cfgPath := gf.Path + string(os.PathSeparator) + gf.Name + ".toml"
 	if err := toml.NewEncoder(buf).Encode(gf); err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (gf *GeneralConfig) Set(k, v string) error {
 	return nil
 }
 
-// SetBytes at the config level sets a value in the <c.name>.conf file
+// SetBytes at the config level sets a value in the <c.name>.toml file
 func (gf *GeneralConfig) SetBytes(k string, v []byte) error {
 	return gf.Set(k, string(v))
 }

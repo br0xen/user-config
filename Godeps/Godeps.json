@@ -1,0 +1,16 @@
+{
+	"ImportPath": "github.com/br0xen/user-config",
+	"GoVersion": "go1.8",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "github.com/BurntSushi/toml",
+			"Comment": "v0.3.0-7-ga368813",
+			"Rev": "a368813c5e648fee92e5f6c30e3944ff9d5e8895"
+		},
+		{
+			"ImportPath": "github.com/casimir/xdg-go",
+			"Rev": "372ccc2180dab73316615641d5617c5ed3e35529"
+		}
+	]
+}
