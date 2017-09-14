@@ -5,8 +5,8 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
-			"Comment": "v0.3.0-7-ga368813",
-			"Rev": "a368813c5e648fee92e5f6c30e3944ff9d5e8895"
+			"Comment": "v0.3.0",
+			"Rev": "b26d9c308763d68093482582cea63d69be07a0f0"
 		},
 		{
 			"ImportPath": "github.com/casimir/xdg-go",
