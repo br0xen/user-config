@@ -25,54 +25,54 @@ func NewConfig(name string) (*Config, error) {
 	return c, nil
 }
 
-// GetKeyList at the config level returns all keys in the <c.name>.toml file
+// GetKeyList at the config level returns all keys in the <c.name>.conf file
 func (c *Config) GetKeyList() []string {
 	return c.generalConfig.GetKeyList()
 }
 
-// Set at the config level sets a value in the <c.name>.toml file
+// Set at the config level sets a value in the <c.name>.conf file
 func (c *Config) Set(k, v string) error {
 	return c.generalConfig.Set(k, v)
 }
 
-// SetBytes at the config level sets a value in the <c.name>.toml file
+// SetBytes at the config level sets a value in the <c.name>.conf file
 func (c *Config) SetBytes(k string, v []byte) error {
 	return c.generalConfig.SetBytes(k, v)
 }
 
-// SetInt saves an integer (as a string) in the <c.name>.toml file
+// SetInt saves an integer (as a string) in the <c.name>.conf file
 func (c *Config) SetInt(k string, v int) error {
 	return c.generalConfig.SetInt(k, v)
 }
 
-// SetDateTime saves a time.Time (as a string) in the <c.name>.toml file
+// SetDateTime saves a time.Time (as a string) in the <c.name>.conf file
 func (c *Config) SetDateTime(k string, v time.Time) error {
 	return c.generalConfig.SetDateTime(k, v)
 }
 
-// SetArray saves a string slice in the <c.name>.toml file
+// SetArray saves a string slice in the <c.name>.conf file
 func (c *Config) SetArray(k string, v []string) error {
 	return c.generalConfig.SetArray(k, v)
 }
 
-// Get at the config level retrieves a value from the <c.name>.toml file
+// Get at the config level retrieves a value from the <c.name>.conf file
 func (c *Config) Get(k string) string {
 	return c.generalConfig.Get(k)
 }
 
-// GetBytes at the config level retrieves a value from the <c.name>.toml file
+// GetBytes at the config level retrieves a value from the <c.name>.conf file
 // and returns it as a byte slice
 func (c *Config) GetBytes(k string) []byte {
 	return c.generalConfig.GetBytes(k)
 }
 
-// GetInt at the config level retrieves a value from the <c.name>.toml file
+// GetInt at the config level retrieves a value from the <c.name>.conf file
 // and returns it as an integer (or an error if conversion fails)
 func (c *Config) GetInt(k string) (int, error) {
 	return c.generalConfig.GetInt(k)
 }
 
-// GetDateTime at the config level retrieves a value from the <c.name>.toml file
+// GetDateTime at the config level retrieves a value from the <c.name>.conf file
 func (c *Config) GetDateTime(k string) (time.Time, error) {
 	return c.generalConfig.GetDateTime(k)
 }
@@ -81,7 +81,7 @@ func (c *Config) GetArray(k string) ([]string, error) {
 	return c.generalConfig.GetArray(k)
 }
 
-// DeleteKey at the config level removes a key from the <c.name>.toml file
+// DeleteKey at the config level removes a key from the <c.name>.conf file
 func (c *Config) DeleteKey(k string) error {
 	return c.generalConfig.DeleteKey(k)
 }
